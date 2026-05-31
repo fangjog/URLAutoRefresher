@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.venv/
+venv/
+
+browsers/
+chrome-win64.zip
+dist/
+build/pyinstaller/
+build/*.spec
+
+logs/*.log
+logs/*.log.*
