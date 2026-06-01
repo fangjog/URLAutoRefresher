@@ -19,10 +19,9 @@ Bug 描述：
 修复方案：
 
 - 新增独立 `user_stop_event`，只有用户点击停止或关闭窗口时才标记“已停止”。
-- 每个页面使用 `PageState` 维护状态：成功次数、失败次数、连续失败次数、重建次数、最终状态。
-- 单次刷新失败只记录错误并推进一次进度，不关闭整个页面。
+- 每个页面使用 `PageState` 维护状态：成功次数、失败次数、重建次数、最终状态。
+- 单次刷新失败只记录错误并推进一次进度，不关闭整个页面，也不会因为连续失败而提前关闭页面。
 - 页面异常关闭时自动重建，最多重建 3 次，并从当前刷新进度继续。
-- 单个页面连续失败 5 次才标记该页面失败，其他页面继续运行。
 - `asyncio.gather(..., return_exceptions=True)` 等待所有页面任务完成后再关闭 browser/context。
 - 浏览器启动参数增加稳定性选项：`--disable-dev-shm-usage`、`--disable-gpu`、`--no-first-run`、`--no-default-browser-check`、`--disable-background-timer-throttling`、`--disable-backgrounding-occluded-windows`、`--disable-renderer-backgrounding`。
 - GUI 日志最多保留最近 1000 行，文件日志继续完整写入。

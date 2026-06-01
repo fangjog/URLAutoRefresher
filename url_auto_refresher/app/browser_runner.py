@@ -38,7 +38,6 @@ class PageState:
     completed_refresh_count: int = 0
     failed_count: int = 0
     open_failed_count: int = 0
-    consecutive_failed_count: int = 0
     recreated_count: int = 0
     status: str = "running"
     last_error: str = ""
@@ -50,7 +49,6 @@ class PageState:
 
 
 class BrowserRunner:
-    max_consecutive_failures = 5
     max_recreates = 3
 
     def __init__(
@@ -214,17 +212,6 @@ class BrowserRunner:
 
                 if (
                     state.status == "running"
-                    and state.consecutive_failed_count >= self.max_consecutive_failures
-                ):
-                    state.status = "failed"
-                    state.closed_early = True
-                    self._record_error(
-                        f"{page_label} 连续失败 {self.max_consecutive_failures} 次，标记该页面失败"
-                    )
-                    break
-
-                if (
-                    state.status == "running"
                     and page.is_closed()
                     and not self._is_user_stop()
                 ):
@@ -271,7 +258,6 @@ class BrowserRunner:
         try:
             await page.reload(wait_until="domcontentloaded", timeout=30_000)
             state.completed_refresh_count += 1
-            state.consecutive_failed_count = 0
             self._emit_progress_step()
             self.log(f"{page_label} 第 {refresh_index} 次刷新完成")
         except Exception as exc:
@@ -282,7 +268,6 @@ class BrowserRunner:
                 return
 
             state.failed_count += 1
-            state.consecutive_failed_count += 1
             state.last_error = format_exception(exc)
             self._emit_progress_step()
             self._record_error(
@@ -336,7 +321,6 @@ class BrowserRunner:
             self.log(f"{page_label} 页面异常关闭，正在重建")
             page = await self._new_page_and_goto(page_index, state, refresh_index)
             if page is not None:
-                state.consecutive_failed_count = 0
                 self.log(f"{page_label} 已重建，继续第 {refresh_index} 次刷新")
                 return page
 
