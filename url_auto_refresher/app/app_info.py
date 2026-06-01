@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 APP_NAME = "URL Auto Refresher"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 GITHUB_REPO = "fangjog/URLAutoRefresher"
 
 RELEASES_URL = f"https://github.com/{GITHUB_REPO}/releases"
